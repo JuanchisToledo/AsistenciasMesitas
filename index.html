@@ -140,7 +140,7 @@ li input[type="text"] { padding: 8px 10px; }
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 <script>
 var firebaseConfig = {
   apiKey: "AIzaSyBJvSbK3lDyxy8yfmMPE_d5l8IpWkMoMfs",
@@ -660,9 +660,23 @@ function computeStats(shifts, st) {
       closeScanner(); scan = { m: m, c: c }; render(); return true;
     } catch (e) { return false; }
   }
+  function loadJsQR(done) {
+    var urls = ["https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js", "https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js", "https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"], i = 0;
+    (function next() {
+      if (typeof jsQR !== "undefined") { done(true); return; }
+      if (i >= urls.length) { done(false); return; }
+      var sc = document.createElement("script"); sc.src = urls[i++];
+      sc.onload = function () { next(); }; sc.onerror = function () { next(); };
+      document.head.appendChild(sc);
+    })();
+  }
   function openScanner() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { showToast("Este navegador no permite usar la cámara acá. Escaneá el QR con la cámara del celular."); return; }
-    if (typeof jsQR === "undefined") { showToast("No se pudo cargar el lector de QR. Revisá tu conexión."); return; }
+    if (typeof jsQR === "undefined") {
+      showToast("Cargando el lector de QR…");
+      loadJsQR(function (ok) { if (ok) openScanner(); else showToast("No se pudo cargar el lector de QR (conexión o bloqueador de anuncios). Escaneá con la cámara normal del celular o escribí el código."); });
+      return;
+    }
     scanOv.textContent = ""; scanOv.hidden = false;
     var video = mk("video"); video.setAttribute("playsinline", "true"); video.muted = true;
     var hint = mk("p", null, "Apuntá la cámara al QR de la pantalla de la mesita"); hint.style.cssText = "color:#fff;text-align:center;margin:0";
