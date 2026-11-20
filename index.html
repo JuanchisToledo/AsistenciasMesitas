@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Asistencias de las mesitas</title>
+<meta name="theme-color" content="#7e22ce">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Asistencias">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root {
+  --bg: #f6f5f1; --surface: #ffffff; --text: #1d1d1b; --muted: #6b6a64; --line: #e4e2da;
+  --a0: #c2410c; --t0: #fdeee4; --a1: #1d4ed8; --t1: #e6edfd;
+  --a2: #15803d; --t2: #e3f5e9; --a3: #7e22ce; --t3: #f1e6fb;
+  --a4: #b91c1c; --t4: #fde8e8; --a5: #0f766e; --t5: #dcf5f2; --a6: #be185d; --t6: #fce7f3; --a7: #a16207; --t7: #fef3c7;
+  --danger: #b91c1c; --warn: #b45309; --warnbg: #fef3c7;
+  box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #151513; --surface: #201f1c; --text: #f1efe8; --muted: #a09e94; --line: #34332e;
+    --a0: #fb923c; --t0: #3a2316; --a1: #7aa2ff; --t1: #1a2542; --a2: #4ade80; --t2: #14301d;
+    --a3: #c084fc; --t3: #2c1a3d;
+    --a4: #f87171; --t4: #3b1919; --a5: #2dd4bf; --t5: #10302c; --a6: #f472b6; --t6: #3a1428; --a7: #fbbf24; --t7: #3a2f10; --danger: #f87171; --warn: #fbbf24; --warnbg: #3a2f10; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #151513; --surface: #201f1c; --text: #f1efe8; --muted: #a09e94; --line: #34332e;
+  --a0: #fb923c; --t0: #3a2316; --a1: #7aa2ff; --t1: #1a2542; --a2: #4ade80; --t2: #14301d;
+  --a3: #c084fc; --t3: #2c1a3d;
+    --a4: #f87171; --t4: #3b1919; --a5: #2dd4bf; --t5: #10302c; --a6: #f472b6; --t6: #3a1428; --a7: #fbbf24; --t7: #3a2f10; --danger: #f87171; --warn: #fbbf24; --warnbg: #3a2f10; color-scheme: dark;
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.4; -webkit-text-size-adjust: 100%; }
+main { max-width: 640px; margin: 0 auto; padding: 20px 16px 96px; }
+h1 { font-size: 1.5rem; margin: 4px 0 4px; letter-spacing: -0.01em; }
+.sub { color: var(--muted); margin: 0 0 14px; font-size: 0.95rem; }
+.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.me { text-align: right; font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+.me b { color: var(--text); display: block; max-width: 140px; overflow: hidden; text-overflow: ellipsis; }
+.role { display: inline-block; font-size: 0.75rem; font-weight: 600; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); margin: 3px 0; }
+.bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+.btn { font: inherit; font-weight: 600; font-size: 0.92rem; color: var(--text); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 10px; padding: 0 14px; min-height: 44px; cursor: pointer; }
+.btn.on { background: var(--text); color: var(--bg); }
+.btn.danger { color: var(--danger); }
+.btn.primary { background: var(--text); color: var(--bg); }
+.btn:disabled { opacity: .5; cursor: default; }
+.badge { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 6px; border-radius: 999px; background: var(--danger); color: #fff; font-size: .75rem; line-height: 20px; text-align: center; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; margin-bottom: 18px; overflow: hidden; }
+.card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; background: var(--tint); border-bottom: 1px solid var(--line); }
+.card h2 { margin: 0; font-size: 1.05rem; color: var(--accent); }
+.count { font-size: .8rem; font-weight: 600; color: var(--accent); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 2px 10px; }
+.add { display: flex; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+input[type="text"], select { flex: 1; min-width: 0; font: inherit; font-size: 16px; color: var(--text); background: var(--bg);
+  border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+input[type="text"]:focus, select:focus { outline: 2px solid var(--accent, var(--text)); outline-offset: 1px; }
+.add button { font: inherit; font-weight: 600; color: #fff; background: var(--accent); border: 0; border-radius: 10px; padding: 0 16px; min-height: 44px; cursor: pointer; }
+:root[data-theme="dark"] .add button { color: #151513; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .add button { color: #151513; } }
+.add button:disabled { opacity: .5; }
+ul { list-style: none; margin: 0; padding: 0; }
+li { display: flex; align-items: center; gap: 12px; padding: 4px 16px; border-bottom: 1px solid var(--line); min-height: 56px;
+  transition: opacity .25s, transform .25s, max-height .3s; max-height: 220px; }
+li:last-child { border-bottom: 0; }
+li.out { opacity: 0; transform: translateX(24px); max-height: 0; min-height: 0; padding-top: 0; padding-bottom: 0; overflow: hidden; }
+.check { flex: none; width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--accent); background: transparent; cursor: pointer;
+  display: grid; place-items: center; color: transparent; font-size: 18px; line-height: 1; padding: 0; }
+.check:hover, .check:focus-visible { background: var(--tint); color: var(--accent); outline: none; }
+.dot { flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); margin: 0 11px; }
+.txt { flex: 1; min-width: 0; overflow-wrap: anywhere; padding: 10px 0; }
+.txt small { display: block; color: var(--muted); font-size: .75rem; }
+li input[type="text"] { padding: 8px 10px; }
+.swatches { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.swatches small { color: var(--muted); font-size: .8rem; margin-right: 2px; }
+.sw { width: 34px; height: 34px; border-radius: 50%; border: 3px solid var(--surface); background: var(--sc); cursor: pointer; padding: 0; box-shadow: 0 0 0 1px var(--line); }
+.sw.sel { box-shadow: 0 0 0 3px var(--text); }
+.empty { padding: 22px 16px; text-align: center; color: var(--muted); display: block; min-height: 0; }
+.note { text-align: center; color: var(--muted); font-size: .85rem; margin: 6px 0 0; }
+.err { color: var(--danger); }
+.newsec { display: flex; gap: 8px; margin-bottom: 18px; }
+.center { max-width: 460px; margin: 12vh auto 0; text-align: center; }
+.center .card { padding: 24px 20px; margin-bottom: 14px; }
+.center p { color: var(--muted); }
+.steps { text-align: left; font-size: .92rem; color: var(--text); padding-left: 18px; }
+.member { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.member:last-child { border-bottom: 0; }
+.member.pend { background: var(--warnbg); }
+.minfo { flex: 1 1 160px; min-width: 0; }
+.minfo b, .minfo span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.minfo span { color: var(--muted); font-size: .8rem; }
+.member select { flex: 0 0 auto; width: 130px; }
+#toast { position: fixed; left: 50%; transform: translateX(-50%) translateY(20px); bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  background: var(--text); color: var(--bg); padding: 10px 14px; border-radius: 12px; display: flex; align-items: center; gap: 12px;
+  opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; max-width: calc(100% - 32px); font-size: .92rem; }
+#toast.show { opacity: 1; transform: translateX(-50%); pointer-events: auto; }
+#toast button { font: inherit; font-weight: 700; background: none; border: 0; color: inherit; text-decoration: underline; cursor: pointer; padding: 6px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 16px 12px; }
+.chip { font: inherit; font-size: .92rem; font-weight: 600; border: 1.5px solid var(--accent, var(--text)); color: var(--accent, var(--text)); background: transparent; border-radius: 999px; padding: 8px 14px; min-height: 40px; cursor: pointer; }
+.chip.sel { background: var(--accent, var(--text)); color: var(--surface); }
+.field { padding: 12px 16px 4px; }
+.field label { display: block; font-size: .8rem; color: var(--muted); margin: 0 0 4px; }
+.field input { width: 100%; }
+.tag { display: inline-block; font-size: .7rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; vertical-align: middle; }
+.tag.pend { color: var(--warn); background: var(--warnbg); }
+.tag.ok { color: var(--a2); background: var(--t2); }
+.txt b { font-weight: 700; }
+.overlay { position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,.85); display: flex; align-items: center; justify-content: center; padding: calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px)); }
+.overlay[hidden] { display: none; }
+#imgov { z-index: 60; }
+.overlay img { max-width: 100%; max-height: 80vh; border-radius: 12px; background: #fff; }
+.ov-card { background: var(--surface); color: var(--text); border-radius: 16px; width: 100%; max-width: 460px; max-height: 92vh; overflow-y: auto; padding: 16px; }
+.idtile { display: block; margin-top: 6px; font: inherit; font-size: .85rem; font-weight: 600; color: var(--text); background: var(--bg); border: 1.5px dashed var(--line); border-radius: 10px; padding: 8px 12px; cursor: pointer; text-align: left; max-width: 100%; }
+.idtile.sm { font-size: .78rem; padding: 5px 10px; }
+.mtag { display: inline-block; font-size: .7rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; color: var(--accent, var(--muted)); background: var(--tint, var(--bg)); margin: 0 6px 2px 0; vertical-align: middle; }
+
+.prog { height: 12px; border-radius: 999px; background: var(--bg); border: 1px solid var(--line); overflow: hidden; }
+.prog > div { height: 100%; background: var(--a2); border-radius: 999px; transition: width .6s linear; }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+.stat b { display: block; font-size: 1.35rem; }
+.stat span { color: var(--muted); font-size: .8rem; }
+.bigcode { font-family: ui-monospace, Menlo, monospace; font-size: 2.6rem; font-weight: 800; letter-spacing: .08em; margin: 6px 0; }
+.medal { flex: none; width: 34px; text-align: center; font-size: 1.3rem; font-weight: 700; color: var(--muted); }
+</style>
+<body>
+<main id="app"></main>
+<div id="toast" role="status"><span id="toast-msg"></span><button type="button" id="toast-undo" style="display:none">Deshacer</button></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+var firebaseConfig = {
+  apiKey: "AIzaSyBJvSbK3lDyxy8yfmMPE_d5l8IpWkMoMfs",
+  authDomain: "faltantes-en-mesita.firebaseapp.com",
+  projectId: "faltantes-en-mesita",
+  appId: "1:678572128455:web:7f148825e41fe082cf66e2"
+};
+/* ---- Calculo de horas y puntos (funciones puras) ---- */
+function weekStart(ms) { var d = new Date(ms); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d.getTime(); }
+function monthKey(ms) { var d = new Date(ms); return d.getFullYear() * 12 + d.getMonth(); }
+function computeStats(shifts, st) {
+  var per = {}, out = {};
+  shifts.forEach(function (s) {
+    if (!s.outAt || !s.inAt) return;
+    var end = s.outAt, cap = st.maxShiftHours * 3600000;
+    if (end - s.inAt > cap) end = s.inAt + cap;
+    if (end - s.inAt < st.minMinutes * 60000) return;
+    var p = per[s.uid] = per[s.uid] || { name: s.name, iv: [] };
+    p.iv.push([s.inAt, end]);
+  });
+  Object.keys(per).forEach(function (uid) {
+    var iv = per[uid].iv.sort(function (a, b) { return a[0] - b[0]; }), merged = [];
+    iv.forEach(function (i) {
+      var last = merged[merged.length - 1];
+      if (last && i[0] <= last[1]) last[1] = Math.max(last[1], i[1]); else merged.push([i[0], i[1]]);
+    });
+    var r = { name: per[uid].name, minM: {}, ptsM: {}, weekMin: {}, total: 0, totalMin: 0, streak: 0 };
+    merged.forEach(function (i) {
+      var min = (i[1] - i[0]) / 60000, pts = Math.floor(min / 15) * 15 / 60 * st.pointsPerHour, mk = monthKey(i[0]), wk = weekStart(i[0]);
+      r.minM[mk] = (r.minM[mk] || 0) + min; r.ptsM[mk] = (r.ptsM[mk] || 0) + pts;
+      r.total += pts; r.totalMin += min; r.weekMin[wk] = (r.weekMin[wk] || 0) + min;
+    });
+    var wks = Object.keys(r.weekMin).map(Number).sort(function (a, b) { return a - b; }), lastOk = null, streak = 0;
+    wks.forEach(function (wk) {
+      if (r.weekMin[wk] < st.weeklyGoalHours * 60) return;
+      streak = (lastOk !== null && Math.round((wk - lastOk) / 604800000) === 1) ? streak + 1 : 1;
+      var bonus = st.weeklyBonus + st.streakBonus * Math.min(streak - 1, 4), mk = monthKey(wk);
+      r.ptsM[mk] = (r.ptsM[mk] || 0) + bonus; r.total += bonus; lastOk = wk;
+    });
+    var now = weekStart(Date.now());
+    r.streak = (lastOk !== null && Math.round((now - lastOk) / 604800000) <= 1) ? streak : 0;
+    out[uid] = r;
+  });
+  return out;
+}
+
+</script>
+<script>
+(function () {
+  var ROLES = { pending: "Pendiente", blocked: "Bloqueado", reader: "Lector", editor: "Editor", admin: "Admin", kiosk: "Pantalla de mesita" };
+  var DEFAULT_MESITAS = [{ id: "civil", name: "Mesita de Civil", color: 0 }, { id: "electro", name: "Mesita de Electromecánica y Mecánica", color: 1 }];
+  var DEFAULT_SETTINGS = { pointsPerHour: 10, weeklyGoalHours: 4, weeklyBonus: 20, streakBonus: 5, maxShiftHours: 6, minMinutes: 10, showRanking: true };
+  var app = document.getElementById("app");
+  var auth, db, authUser = null, me = null;
+  var shifts = [], users = [], mesitas = DEFAULT_MESITAS.slice(), settings = {}, stats = {}, shiftsLoaded = false;
+  Object.keys(DEFAULT_SETTINGS).forEach(function (k) { settings[k] = DEFAULT_SETTINGS[k]; });
+  var subMe = null, subData = [], activeRole = null;
+  var view = "", scan = null, drafts = {}, msg = "", toastTimer = null, progOff = 0, rankOff = 0;
+  var afMesita = "", afStatus = "todas", afQ = "";
+  var kiosk = null, kioskLoop = null, kioskClock = null, wakeLock = null;
+  var qs = new URLSearchParams(location.search);
+  if (qs.get("m") && qs.get("c")) scan = { m: qs.get("m"), c: qs.get("c") };
+
+  function mk(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function clean(v) { return (v || "").trim().replace(/\s+/g, " "); }
+  function role() { return me ? me.role : ""; }
+  function isMember() { var r = role(); return r === "reader" || r === "editor" || r === "admin"; }
+  function canMark() { var r = role(); return r === "editor" || r === "admin"; }
+  function isAdmin() { return role() === "admin"; }
+  function isKioskRole() { return role() === "kiosk"; }
+  function fullName() { return clean((authUser && (authUser.displayName || authUser.email)) || "").slice(0, 40); }
+  function shortName(n) { var p = (n || "").split(" "); return p[0] + (p[1] ? " " + p[1].charAt(0).toUpperCase() + "." : ""); }
+  function p2(x) { return ("0" + x).slice(-2); }
+  function fmt(t) { var d = new Date(t); return p2(d.getDate()) + "/" + p2(d.getMonth() + 1) + " " + p2(d.getHours()) + ":" + p2(d.getMinutes()); }
+  function hm(min) { min = Math.round(min); return Math.floor(min / 60) + " h " + p2(min % 60) + " min"; }
+  function mesitaInfo(id) {
+    for (var i = 0; i < mesitas.length; i++) if (mesitas[i].id === id) {
+      var c = mesitas[i].color; return { id: id, name: mesitas[i].name, k: (typeof c === "number" && c >= 0 && c < 8) ? c : (i % 4) };
+    }
+    return null;
+  }
+  function mesitaName(id) { var m = mesitaInfo(id); return m ? m.name : id; }
+  function errText(e, fb) { return e && e.code === "permission-denied" ? "No tenés permiso o el código no es válido." : fb; }
+  function showToast(text) {
+    document.getElementById("toast-msg").textContent = text;
+    var t = document.getElementById("toast"); t.classList.add("show");
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove("show"); }, 5000);
+  }
+  function draftInput(key, value, placeholder, max) {
+    var inp = mk("input"); inp.type = "text"; inp.maxLength = max; inp.autocomplete = "off"; inp.dataset.key = key;
+    if (placeholder) inp.placeholder = placeholder;
+    inp.value = drafts[key] != null ? drafts[key] : value;
+    inp.addEventListener("input", function () { drafts[key] = inp.value; });
+    return inp;
+  }
+  function openShift(uid) { for (var i = 0; i < shifts.length; i++) if (shifts[i].uid === uid && !shifts[i].outAt) return shifts[i]; return null; }
+  function isStale(s) { return !s.outAt && (Date.now() - s.inAt) > settings.maxShiftHours * 3600000; }
+  function needsReview(s) { return isStale(s) || (s.outAt && (s.outAt - s.inAt) > settings.maxShiftHours * 3600000); }
+  function myStats() { return stats[authUser.uid] || { minM: {}, ptsM: {}, weekMin: {}, total: 0, totalMin: 0, streak: 0 }; }
+  function recompute() { stats = computeStats(shifts, settings); }
+
+  /* ---------- datos ---------- */
+  function stopData() { subData.forEach(function (u) { try { u(); } catch (e) {} }); subData = []; shifts = []; users = []; shiftsLoaded = false; stats = {}; }
+  function fail() { msg = "Se perdió la conexión o falta permiso para leer los datos."; render(); }
+  function toMs(v) { return v && v.toMillis ? v.toMillis() : (v || null); }
+  function startData(r) {
+    if (r === "reader" || r === "editor" || r === "admin" || r === "kiosk") {
+      subData.push(db.collection("config").doc("mesitas").onSnapshot(function (d) {
+        var v = d.exists ? d.data() : null;
+        mesitas = v && Array.isArray(v.list) && v.list.length ? v.list.map(function (x) { return { id: String(x.id), name: String(x.name || ""), color: x.color }; }) : DEFAULT_MESITAS.slice();
+        render();
+      }, function () {}));
+    }
+    if (r === "reader" || r === "editor" || r === "admin") {
+      subData.push(db.collection("config").doc("attendance").onSnapshot(function (d) {
+        var v = d.exists ? d.data() : {};
+        Object.keys(DEFAULT_SETTINGS).forEach(function (k) { settings[k] = (v[k] !== undefined && v[k] !== null) ? v[k] : DEFAULT_SETTINGS[k]; });
+        recompute(); render();
+      }, function () {}));
+      subData.push(db.collection("shifts").orderBy("inAt", "desc").limit(1500).onSnapshot(function (s) {
+        shifts = s.docs.map(function (d) {
+          var v = d.data({ serverTimestamps: "estimate" });
+          return { id: d.id, uid: String(v.uid || ""), name: String(v.name || ""), mesita: String(v.mesita || ""), inAt: toMs(v.inAt), outAt: toMs(v.outAt), source: String(v.source || ""), editedBy: String(v.editedBy || "") };
+        });
+        shiftsLoaded = true; msg = ""; recompute(); render();
+      }, fail));
+    }
+    if (r === "admin") {
+      subData.push(db.collection("users").onSnapshot(function (s) {
+        users = s.docs.map(function (d) { var v = d.data(); return { uid: d.id, name: String(v.name || ""), email: String(v.email || ""), role: String(v.role || "pending"), createdAt: v.createdAt || 0 }; });
+        render();
+      }, function () {}));
+    }
+  }
+  function init() {
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth(); db = firebase.firestore();
+    auth.onAuthStateChanged(function (u) {
+      if (subMe) { subMe(); subMe = null; }
+      stopKiosk(); stopData(); activeRole = null; me = null; authUser = u; view = "";
+      if (!u) { render(); return; }
+      render();
+      var ref = db.collection("users").doc(u.uid);
+      ref.get().then(function (snap) {
+        if (snap.exists) return;
+        return ref.set({ name: u.displayName || "", email: u.email || "", role: "pending", createdAt: Date.now() });
+      }).then(function () {
+        subMe = ref.onSnapshot(function (snap) {
+          me = snap.exists ? snap.data() : { role: "pending" };
+          if (me.role !== activeRole) { stopData(); activeRole = me.role; startData(me.role); }
+          render();
+        }, function () { msg = "No se pudo leer tu perfil. Revisá tu conexión."; render(); });
+      }).catch(function () { msg = "No se pudo iniciar. Revisá la configuración de Firebase y las reglas."; render(); });
+    });
+  }
+  function signIn() {
+    var p = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(p).catch(function (e) {
+      if (e && (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment")) auth.signInWithRedirect(p);
+      else if (e && e.code === "auth/unauthorized-domain") { msg = "Este dominio no está autorizado en Firebase (Authentication > Configuración > Dominios autorizados)."; render(); }
+      else if (!e || e.code !== "auth/popup-closed-by-user") { msg = "No se pudo iniciar sesión" + (e && e.code ? " (" + e.code + ")" : "") + "."; render(); }
+    });
+  }
+
+  /* ---------- marcar entrada / salida ---------- */
+  function clearScan() { scan = null; try { history.replaceState(null, "", location.pathname); } catch (e) {} }
+  function checkIn(mesita, code) {
+    if (openShift(authUser.uid)) { showToast("Ya tenés una entrada abierta."); return; }
+    db.collection("shifts").add({ uid: authUser.uid, name: fullName(), mesita: mesita, inAt: firebase.firestore.FieldValue.serverTimestamp(), outAt: null, code: code, source: "qr" })
+      .then(function () { clearScan(); delete drafts.code; showToast("Entrada registrada en " + mesitaName(mesita) + " ✓"); render(); })
+      .catch(function (e) { showToast(e && e.code === "permission-denied" ? "Código incorrecto o vencido. Escaneá de nuevo el QR de la pantalla." : "No se pudo marcar. Probá de nuevo."); });
+  }
+  function checkOut(s, code) {
+    db.collection("shifts").doc(s.id).update({ outAt: firebase.firestore.FieldValue.serverTimestamp(), outCode: code })
+      .then(function () {
+        clearScan(); delete drafts.code;
+        var min = (Date.now() - s.inAt) / 60000;
+        showToast(min < settings.minMinutes ? "Salida registrada, pero duró menos de " + settings.minMinutes + " min: no suma." : "Salida registrada ✓ Sumaste " + hm(Math.min(min, settings.maxShiftHours * 60)) + ".");
+        render();
+      })
+      .catch(function (e) { showToast(e && e.code === "permission-denied" ? "Código incorrecto o vencido. Escaneá de nuevo el QR de la pantalla." : "No se pudo marcar. Probá de nuevo."); });
+  }
+
+  /* ---------- pantalla de la mesita (QR) ---------- */
+  function rand6() { var a = new Uint32Array(1); crypto.getRandomValues(a); return ("00000" + (a[0] % 1000000)).slice(-6); }
+  function stopKiosk() {
+    clearTimeout(kioskLoop); clearInterval(kioskClock); kioskLoop = kioskClock = null; kiosk = null;
+    if (wakeLock) { try { wakeLock.release(); } catch (e) {} wakeLock = null; }
+  }
+  function startKiosk(mesitaId) {
+    stopKiosk();
+    try { localStorage.setItem("kioskMesita", mesitaId); } catch (e) {}
+    kiosk = { mesita: mesitaId, code: null, prev: rand6(), nextAt: 0, error: "" };
+    if (navigator.wakeLock) navigator.wakeLock.request("screen").then(function (w) { wakeLock = w; }).catch(function () {});
+    var tick = function () {
+      if (!kiosk) return;
+      var nc = rand6(), old = kiosk.code || kiosk.prev, k = kiosk;
+      db.collection("codes").doc(k.mesita).set({ code: nc, prev: old, at: firebase.firestore.FieldValue.serverTimestamp() }).then(function () {
+        if (kiosk !== k) return;
+        k.prev = old; k.code = nc; k.nextAt = Date.now() + 60000; k.error = ""; render();
+      }).catch(function () { if (kiosk === k) { k.error = "No se pudo generar el código. Revisá la conexión y las reglas de Firebase."; render(); } });
+      kioskLoop = setTimeout(tick, 60000);
+    };
+    tick();
+    kioskClock = setInterval(function () {
+      var el = document.getElementById("kclock"); if (!el || !kiosk || !kiosk.nextAt) return;
+      var left = Math.max(0, Math.round((kiosk.nextAt - Date.now()) / 1000));
+      el.textContent = "Cambia en " + left + " s";
+      var pb = document.getElementById("kbar"); if (pb) pb.style.width = Math.min(100, (left / 60) * 100) + "%";
+    }, 1000);
+    document.addEventListener("visibilitychange", function () { if (!document.hidden && kiosk && navigator.wakeLock) navigator.wakeLock.request("screen").then(function (w) { wakeLock = w; }).catch(function () {}); });
+    render();
+  }
+  function kioskView() {
+    var card = mk("section", "card"); card.style.setProperty("--accent", "var(--a3)"); card.style.setProperty("--tint", "var(--t3)");
+    var head = mk("div", "card-head"); head.appendChild(mk("h2", null, "🖥 Pantalla de la mesita")); card.appendChild(head);
+    var body = mk("div"); body.style.padding = "16px"; body.style.textAlign = "center";
+    if (!kiosk) {
+      body.appendChild(mk("p", null, "Elegí en qué mesita está esta pantalla. Va a mostrar un QR y un código que cambian cada minuto."));
+      var row = mk("div", "chips"); row.style.justifyContent = "center";
+      mesitas.forEach(function (m) {
+        var info = mesitaInfo(m.id), c = mk("button", "chip", m.name); c.type = "button"; c.style.setProperty("--accent", "var(--a" + info.k + ")");
+        c.addEventListener("click", function () { startKiosk(m.id); });
+        row.appendChild(c);
+      });
+      body.appendChild(row);
+    } else {
+      var info2 = mesitaInfo(kiosk.mesita);
+      body.appendChild(mk("h1", null, mesitaName(kiosk.mesita))); body.firstChild.style.color = "var(--a" + (info2 ? info2.k : 0) + ")";
+      body.appendChild(mk("p", "sub", "Escaneá el QR con tu celular para marcar entrada o salida."));
+      if (kiosk.error) body.appendChild(mk("p", "note err", kiosk.error));
+      else if (kiosk.code) {
+        var qrBox = mk("div"); qrBox.id = "qr"; qrBox.style.cssText = "display:inline-block;background:#fff;padding:14px;border-radius:14px;margin:6px 0";
+        body.appendChild(qrBox);
+        try { new QRCode(qrBox, { text: location.origin + location.pathname + "?m=" + encodeURIComponent(kiosk.mesita) + "&c=" + kiosk.code, width: 240, height: 240, colorDark: "#000000", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M }); } catch (e) {}
+        var code = mk("div", "bigcode", kiosk.code.slice(0, 3) + " " + kiosk.code.slice(3)); body.appendChild(code);
+        body.appendChild(mk("p", "note", "O ingresá este código en la página, en la pestaña Marcar."));
+        var clock = mk("p", "note", ""); clock.id = "kclock"; body.appendChild(clock);
+        var pr = mk("div", "prog"); var pb = mk("div"); pb.id = "kbar"; pr.appendChild(pb); body.appendChild(pr);
+      } else body.appendChild(mk("p", "note", "Generando código…"));
+      var stop = mk("button", "btn", "Cambiar de mesita / detener"); stop.type = "button"; stop.style.marginTop = "14px";
+      stop.addEventListener("click", function () { stopKiosk(); render(); });
+      body.appendChild(stop);
+    }
+    card.appendChild(body); app.appendChild(card);
+  }
+
+  /* ---------- pantallas ---------- */
+  function render() {
+    var ae = document.activeElement, fk = null, fs = 0, fe = 0;
+    if (ae && ae.dataset && ae.dataset.key) { fk = ae.dataset.key; fs = ae.selectionStart; fe = ae.selectionEnd; }
+    app.textContent = "";
+    if (!authUser) loginScreen();
+    else if (!me) centerScreen("Cargando…", "", true);
+    else if (me.role === "pending") centerScreen("Esperando aprobación", "Tu cuenta (" + (authUser.email || "") + ") fue registrada. Un administrador tiene que admitirte antes de que puedas entrar. Volvé a entrar más tarde.", true);
+    else if (me.role === "blocked") centerScreen("Acceso denegado", "Un administrador no habilitó tu acceso a esta página.", true);
+    else appScreen();
+    if (fk) {
+      var el = document.querySelector('input[data-key="' + fk.replace(/"/g, '\\"') + '"]');
+      if (el) { el.focus(); try { el.setSelectionRange(fs, fe); } catch (x) {} }
+    }
+  }
+  function loginScreen() {
+    var w = mk("div", "center"), c = mk("div", "card");
+    c.appendChild(mk("h1", null, "Asistencias de las mesitas"));
+    c.appendChild(mk("p", null, "Iniciá sesión con tu cuenta de Google. Si es tu primera vez, un administrador tendrá que admitirte."));
+    var b = mk("button", "btn primary", "Entrar con Google"); b.type = "button"; b.addEventListener("click", signIn);
+    c.appendChild(b); w.appendChild(c);
+    if (msg) w.appendChild(mk("p", "note err", msg));
+    app.appendChild(w);
+  }
+  function centerScreen(title, text, withOut) {
+    var w = mk("div", "center"), c = mk("div", "card");
+    c.appendChild(mk("h1", null, title));
+    if (text) c.appendChild(mk("p", null, text));
+    if (withOut) { var b = mk("button", "btn", "Cerrar sesión"); b.type = "button"; b.addEventListener("click", function () { auth.signOut(); }); c.appendChild(b); }
+    w.appendChild(c);
+    if (msg) w.appendChild(mk("p", "note err", msg));
+    app.appendChild(w);
+  }
+
+  function tabsForRole() {
+    var r = role(), t = [];
+    if (r === "kiosk") return [["kiosko", "🖥 Pantalla"]];
+    if (canMark()) { t.push(["marcar", "✅ Marcar"]); t.push(["progreso", "📈 Mi progreso"]); }
+    if (settings.showRanking || isAdmin() || r === "reader") t.push(["ranking", "🏆 Ranking"]);
+    if (isAdmin()) {
+      var rev = shifts.filter(needsReview).length;
+      t.push(["asistencias", "🗂 Asistencias", rev]); t.push(["kiosko", "🖥 Pantalla"]);
+      var pend = users.filter(function (u) { return u.role === "pending"; }).length;
+      t.push(["miembros", "👥 Integrantes", pend]); t.push(["ajustes", "⚙ Ajustes"]);
+    }
+    return t;
+  }
+  function appScreen() {
+    var tabs = tabsForRole();
+    if (!tabs.some(function (t) { return t[0] === view; })) view = tabs[0] ? tabs[0][0] : "ranking";
+    if (view !== "kiosko" && kiosk) stopKiosk();
+    var top = mk("div", "top"), l = mk("div");
+    l.appendChild(mk("h1", null, "Asistencias de las mesitas"));
+    l.appendChild(mk("p", "sub", isKioskRole() ? "Esta cuenta solo muestra el código de la mesita." : (canMark() ? "Marcá tu entrada y salida y sumá puntos por las horas que cumplís." : "Estás en modo lectura.")));
+    var r = mk("div", "me"); r.appendChild(mk("b", null, (authUser.displayName || authUser.email || "").split(" ")[0])); r.appendChild(mk("span", "role", ROLES[me.role] || me.role));
+    var out = mk("button", "btn", "Salir"); out.type = "button"; out.style.minHeight = "36px"; out.style.display = "block"; out.style.marginLeft = "auto";
+    out.addEventListener("click", function () { auth.signOut(); }); r.appendChild(out);
+    top.appendChild(l); top.appendChild(r); app.appendChild(top);
+
+    if (tabs.length > 1) {
+      var bar = mk("div", "bar");
+      tabs.forEach(function (t) {
+        var b = mk("button", "btn" + (view === t[0] ? " on" : ""), t[1]); b.type = "button";
+        if (t[2]) b.appendChild(mk("span", "badge", String(t[2])));
+        b.addEventListener("click", function () { view = t[0]; render(); });
+        bar.appendChild(b);
+      });
+      app.appendChild(bar);
+    }
+    if (view === "marcar") markView();
+    else if (view === "progreso") progressView();
+    else if (view === "ranking") rankingView();
+    else if (view === "asistencias") shiftsView();
+    else if (view === "kiosko") kioskView();
+    else if (view === "miembros") membersView();
+    else if (view === "ajustes") settingsView();
+    if (msg) app.appendChild(mk("p", "note err", msg));
+  }
+
+  function markView() {
+    var open = openShift(authUser.uid);
+    var card = mk("section", "card"); card.style.setProperty("--accent", "var(--a2)"); card.style.setProperty("--tint", "var(--t2)");
+    var head = mk("div", "card-head"); head.appendChild(mk("h2", null, open ? "Estás en la mesita" : "Marcar entrada")); card.appendChild(head);
+    var body = mk("div"); body.style.padding = "14px 16px 16px";
+    var mesitaSel = scan ? scan.m : (open ? open.mesita : (drafts.msel || ""));
+    if (open) {
+      var p = mk("p", null, "Entraste a " + mesitaName(open.mesita) + " a las " + p2(new Date(open.inAt).getHours()) + ":" + p2(new Date(open.inAt).getMinutes()) + " (" + hm((Date.now() - open.inAt) / 60000) + ")."); p.style.margin = "0 0 10px";
+      body.appendChild(p);
+      if (isStale(open)) body.appendChild(mk("p", "note err", "Pasó mucho tiempo desde tu entrada: un admin va a revisar este turno."));
+    } else if (scan) {
+      var q = mk("p", null, "Vas a marcar entrada en " + mesitaName(scan.m) + "."); q.style.margin = "0 0 10px"; body.appendChild(q);
+    } else {
+      body.appendChild(mk("label", null, "¿En qué mesita estás?")); body.lastChild.style.cssText = "display:block;font-size:.8rem;color:var(--muted);margin:0 0 6px";
+      var chips = mk("div", "chips"); chips.style.padding = "0 0 10px";
+      mesitas.forEach(function (m) {
+        var info = mesitaInfo(m.id), c = mk("button", "chip" + (drafts.msel === m.id ? " sel" : ""), m.name); c.type = "button"; c.style.setProperty("--accent", "var(--a" + info.k + ")");
+        c.addEventListener("click", function () { drafts.msel = m.id; render(); }); chips.appendChild(c);
+      });
+      body.appendChild(chips);
+    }
+    var code = scan ? scan.c : "";
+    var ci = null;
+    if (!scan) {
+      body.appendChild(mk("label", null, "Código de la pantalla (6 dígitos)")); body.lastChild.style.cssText = "display:block;font-size:.8rem;color:var(--muted);margin:0 0 6px";
+      ci = draftInput("code", "", "000000", 6); ci.inputMode = "numeric"; ci.style.width = "100%"; ci.style.marginBottom = "10px"; body.appendChild(ci);
+    }
+    var go = mk("button", "btn primary", open ? "Marcar salida" : "Marcar entrada"); go.type = "button";
+    go.addEventListener("click", function () {
+      var c = scan ? scan.c : clean(drafts.code);
+      if (!/^\d{6}$/.test(c)) { showToast("El código tiene 6 dígitos."); return; }
+      if (open) checkOut(open, c);
+      else { if (!mesitaSel) { showToast("Elegí en qué mesita estás."); return; } checkIn(mesitaSel, c); }
+    });
+    body.appendChild(go);
+    if (scan) { var cx = mk("button", "btn", "Cancelar"); cx.type = "button"; cx.style.marginLeft = "8px"; cx.addEventListener("click", function () { clearScan(); render(); }); body.appendChild(cx); }
+    card.appendChild(body); app.appendChild(card);
+
+    var now = mk("section", "card"); now.style.setProperty("--accent", "var(--a0)"); now.style.setProperty("--tint", "var(--t0)");
+    var h2 = mk("div", "card-head"); h2.appendChild(mk("h2", null, "En la mesita ahora"));
+    var opens = shifts.filter(function (s) { return !s.outAt && !isStale(s); });
+    h2.appendChild(mk("span", "count", String(opens.length))); now.appendChild(h2);
+    var ul = mk("ul");
+    if (shiftsLoaded && !opens.length) ul.appendChild(mk("li", "empty", "No hay nadie marcado en este momento."));
+    opens.forEach(function (s) {
+      var li = mk("li"), info = mesitaInfo(s.mesita);
+      if (info) { li.style.borderLeft = "4px solid var(--a" + info.k + ")"; }
+      var tx = mk("span", "txt"); tx.appendChild(mk("b", null, shortName(s.name)));
+      tx.appendChild(mk("small", null, mesitaName(s.mesita) + " · desde las " + p2(new Date(s.inAt).getHours()) + ":" + p2(new Date(s.inAt).getMinutes())));
+      li.appendChild(tx); ul.appendChild(li);
+    });
+    now.appendChild(ul); app.appendChild(now);
+  }
+
+  function monthLabel(off) { var d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + off); var s = d.toLocaleDateString("es", { month: "long", year: "numeric" }); return s.charAt(0).toUpperCase() + s.slice(1); }
+  function monthKeyOff(off) { var d = new Date(); d.setDate(1); d.setMonth(d.getMonth() + off); return d.getFullYear() * 12 + d.getMonth(); }
+  function monthNav(get, set) {
+    var row = mk("div", "bar"); row.style.alignItems = "center";
+    var a = mk("button", "btn", "◀"); a.type = "button"; a.addEventListener("click", function () { set(get() - 1); render(); });
+    var l = mk("b", null, monthLabel(get())); l.style.flex = "1"; l.style.textAlign = "center";
+    var b = mk("button", "btn", "▶"); b.type = "button"; b.disabled = get() >= 0; b.addEventListener("click", function () { set(get() + 1); render(); });
+    row.appendChild(a); row.appendChild(l); row.appendChild(b); return row;
+  }
+
+  function progressView() {
+    var st = myStats(), key = monthKeyOff(progOff);
+    app.appendChild(monthNav(function () { return progOff; }, function (v) { progOff = v; }));
+    var card = mk("section", "card"); card.style.setProperty("--accent", "var(--a1)"); card.style.setProperty("--tint", "var(--t1)");
+    var head = mk("div", "card-head"); head.appendChild(mk("h2", null, "Mi progreso")); card.appendChild(head);
+    var body = mk("div"); body.style.padding = "14px 16px 16px";
+    var grid = mk("div", "stats");
+    [[Math.round(st.ptsM[key] || 0), "puntos del mes"], [hm(st.minM[key] || 0), "horas del mes"], [Math.round(st.total), "puntos totales"], [st.streak + (st.streak === 1 ? " sem" : " sem"), "racha 🔥"]].forEach(function (x) {
+      var c = mk("div", "stat"); c.appendChild(mk("b", null, String(x[0]))); c.appendChild(mk("span", null, x[1])); grid.appendChild(c);
+    });
+    body.appendChild(grid);
+    var wk = st.weekMin[weekStart(Date.now())] || 0, goal = settings.weeklyGoalHours * 60;
+    var lab = mk("p", null, "Esta semana: " + hm(wk) + " de " + hm(goal) + (wk >= goal ? " ✓ ¡meta cumplida!" : "")); lab.style.margin = "14px 0 6px"; body.appendChild(lab);
+    var pr = mk("div", "prog"); var pb = mk("div"); pb.style.width = Math.min(100, goal ? (wk / goal) * 100 : 0) + "%"; pr.appendChild(pb); body.appendChild(pr);
+    var info = mk("p", "note", settings.pointsPerHour + " puntos por hora · +" + settings.weeklyBonus + " por cumplir la meta semanal · +" + settings.streakBonus + " por cada semana seguida"); info.style.textAlign = "left"; body.appendChild(info);
+    card.appendChild(body); app.appendChild(card);
+
+    var hc = mk("section", "card"); hc.style.setProperty("--accent", "var(--a0)"); hc.style.setProperty("--tint", "var(--t0)");
+    var h2 = mk("div", "card-head"); h2.appendChild(mk("h2", null, "Mis últimas asistencias")); hc.appendChild(h2);
+    var mine = shifts.filter(function (s) { return s.uid === authUser.uid; }).slice(0, 20), ul = mk("ul");
+    if (shiftsLoaded && !mine.length) ul.appendChild(mk("li", "empty", "Todavía no marcaste asistencias."));
+    mine.forEach(function (s) { ul.appendChild(shiftRow(s, false)); });
+    hc.appendChild(ul); app.appendChild(hc);
+  }
+
+  function shiftRow(s, admin) {
+    var li = mk("li"), info = mesitaInfo(s.mesita); li.style.padding = "10px 16px";
+    if (info) li.style.borderLeft = "4px solid var(--a" + info.k + ")";
+    var tx = mk("span", "txt"); tx.style.padding = "0";
+    var t = mk("b", null, admin ? shortName(s.name) : mesitaName(s.mesita)); tx.appendChild(t);
+    var tag = !s.outAt ? (isStale(s) ? ["Falta salida", "pend"] : ["En curso", "ok"]) : (needsReview(s) ? ["Revisar", "pend"] : null);
+    if (tag) { tx.appendChild(document.createTextNode(" ")); tx.appendChild(mk("span", "tag " + tag[1], tag[0])); }
+    if (s.source === "manual") { tx.appendChild(document.createTextNode(" ")); tx.appendChild(mk("span", "tag", "Manual")); }
+    var line = (admin ? mesitaName(s.mesita) + " · " : "") + fmt(s.inAt) + (s.outAt ? " → " + p2(new Date(s.outAt).getHours()) + ":" + p2(new Date(s.outAt).getMinutes()) + " (" + hm((s.outAt - s.inAt) / 60000) + ")" : "");
+    tx.appendChild(mk("small", null, line));
+    if (s.editedBy) tx.appendChild(mk("small", null, "✎ editado por " + s.editedBy));
+    li.appendChild(tx); return li;
+  }
+
+  function rankingView() {
+    var key = monthKeyOff(rankOff);
+    app.appendChild(monthNav(function () { return rankOff; }, function (v) { rankOff = v; }));
+    var card = mk("section", "card"); card.style.setProperty("--accent", "var(--a7)"); card.style.setProperty("--tint", "var(--t7)");
+    var head = mk("div", "card-head"); head.appendChild(mk("h2", null, "🏆 Ranking del mes")); card.appendChild(head);
+    var list = Object.keys(stats).map(function (uid) { return { uid: uid, name: stats[uid].name, pts: Math.round(stats[uid].ptsM[key] || 0), min: stats[uid].minM[key] || 0 }; })
+      .filter(function (x) { return x.pts > 0 || x.min > 0; }).sort(function (a, b) { return b.pts - a.pts || b.min - a.min; });
+    var ul = mk("ul");
+    if (shiftsLoaded && !list.length) ul.appendChild(mk("li", "empty", "Todavía no hay asistencias este mes."));
+    list.forEach(function (x, i) {
+      var li = mk("li"); if (authUser && x.uid === authUser.uid) li.style.background = "var(--tint)";
+      li.appendChild(mk("span", "medal", i === 0 ? "🥇" : (i === 1 ? "🥈" : (i === 2 ? "🥉" : String(i + 1)))));
+      var tx = mk("span", "txt"); tx.appendChild(mk("b", null, shortName(x.name))); tx.appendChild(mk("small", null, hm(x.min))); li.appendChild(tx);
+      li.appendChild(mk("b", null, x.pts + " pts")); ul.appendChild(li);
+    });
+    card.appendChild(ul); app.appendChild(card);
+  }
+
+  /* ---------- admin: asistencias ---------- */
+  function toLocalInput(ms) { if (!ms) return ""; var d = new Date(ms); return d.getFullYear() + "-" + p2(d.getMonth() + 1) + "-" + p2(d.getDate()) + "T" + p2(d.getHours()) + ":" + p2(d.getMinutes()); }
+  var editOv = mk("div", "overlay"); editOv.hidden = true; document.body.appendChild(editOv);
+  function openShiftEditor(s) {
+    var isNew = !s, st = { mesita: s ? s.mesita : (mesitas[0] ? mesitas[0].id : ""), uid: s ? s.uid : "" };
+    editOv.textContent = ""; editOv.hidden = false;
+    var box = mk("div", "ov-card"); var h = mk("h2", null, isNew ? "Cargar asistencia" : "Editar asistencia"); h.style.margin = "0 0 8px"; box.appendChild(h);
+    function field(label, el) { var f = mk("div", "field"); f.style.padding = "8px 0 0"; f.appendChild(mk("label", null, label)); f.appendChild(el); box.appendChild(f); }
+    var sel = null;
+    if (isNew) {
+      sel = mk("select"); var o0 = mk("option", null, "Elegí la persona"); o0.value = ""; sel.appendChild(o0);
+      users.filter(function (u) { return u.role === "editor" || u.role === "admin"; }).forEach(function (u) { var o = mk("option", null, u.name || u.email); o.value = u.uid; sel.appendChild(o); });
+      field("Persona", sel);
+    } else field("Persona", mk("div", null, shortName(s.name)));
+    var chipsBox = mk("div", "chips"); chipsBox.style.padding = "0"; field("Mesita", chipsBox);
+    function drawChips() {
+      chipsBox.textContent = "";
+      mesitas.forEach(function (m) {
+        var info = mesitaInfo(m.id), c = mk("button", "chip" + (st.mesita === m.id ? " sel" : ""), m.name); c.type = "button"; c.style.setProperty("--accent", "var(--a" + info.k + ")");
+        c.addEventListener("click", function () { st.mesita = m.id; drawChips(); }); chipsBox.appendChild(c);
+      });
+    }
+    drawChips();
+    var ii = mk("input"); ii.type = "datetime-local"; ii.value = toLocalInput(s ? s.inAt : Date.now()); field("Entrada", ii);
+    var oi = mk("input"); oi.type = "datetime-local"; oi.value = toLocalInput(s ? s.outAt : null); field("Salida (vacía = sigue en curso)", oi);
+    var act = mk("div", "bar"); act.style.margin = "16px 0 0";
+    var cancel = mk("button", "btn", "Cancelar"); cancel.type = "button"; cancel.addEventListener("click", function () { editOv.hidden = true; });
+    var save = mk("button", "btn primary", "Guardar"); save.type = "button";
+    save.addEventListener("click", function () {
+      if (!ii.value) { showToast("Falta la hora de entrada."); return; }
+      var inD = new Date(ii.value), outD = oi.value ? new Date(oi.value) : null;
+      if (outD && outD <= inD) { showToast("La salida tiene que ser posterior a la entrada."); return; }
+      var data = { mesita: st.mesita, inAt: firebase.firestore.Timestamp.fromDate(inD), outAt: outD ? firebase.firestore.Timestamp.fromDate(outD) : null, editedBy: fullName() };
+      var p;
+      if (isNew) {
+        var u = users.filter(function (x) { return x.uid === sel.value; })[0];
+        if (!u) { showToast("Elegí la persona."); return; }
+        data.uid = u.uid; data.name = (u.name || u.email).slice(0, 40); data.source = "manual";
+        p = db.collection("shifts").add(data);
+      } else p = db.collection("shifts").doc(s.id).update(data);
+      save.disabled = true;
+      p.then(function () { editOv.hidden = true; showToast("Guardado."); }).catch(function (e) { save.disabled = false; showToast(errText(e, "No se pudo guardar.")); });
+    });
+    act.appendChild(cancel); act.appendChild(save); box.appendChild(act); editOv.appendChild(box);
+  }
+  var pendingDel = null;
+  function shiftsView() {
+    var card = mk("section", "card"); card.style.setProperty("--accent", "var(--a1)"); card.style.setProperty("--tint", "var(--t1)");
+    var head = mk("div", "card-head"); head.appendChild(mk("h2", null, "Asistencias")); head.appendChild(mk("span", "count", String(shifts.length))); card.appendChild(head);
+    var tools = mk("div", "add"); tools.style.flexWrap = "wrap";
+    var q = draftInput("aq", "", "Buscar persona…", 40); q.addEventListener("input", function () { afQ = q.value; render(); }); tools.appendChild(q);
+    var plus = mk("button", "btn", "+ Cargar"); plus.type = "button"; plus.style.background = "var(--surface)"; plus.style.color = "var(--text)"; plus.addEventListener("click", function () { openShiftEditor(null); });
+    tools.appendChild(plus); card.appendChild(tools);
+    var seg = mk("div", "chips"); seg.style.paddingTop = "12px";
+    [["todas", "Todas"], ["revisar", "Para revisar"], ["curso", "En curso"]].forEach(function (o) {
+      var c = mk("button", "chip" + (afStatus === o[0] ? " sel" : ""), o[1]); c.type = "button"; c.addEventListener("click", function () { afStatus = o[0]; render(); }); seg.appendChild(c);
+    });
+    [["", "Todas las mesitas"]].concat(mesitas.map(function (m) { return [m.id, m.name]; })).forEach(function (o) {
+      var info = mesitaInfo(o[0]), c = mk("button", "chip" + (afMesita === o[0] ? " sel" : ""), o[1]); c.type = "button";
+      if (info) c.style.setProperty("--accent", "var(--a" + info.k + ")"); c.addEventListener("click", function () { afMesita = o[0]; render(); }); seg.appendChild(c);
+    });
+    card.appendChild(seg);
+    var term = clean(afQ).toLowerCase();
+    var list = shifts.filter(function (s) {
+      if (afMesita && s.mesita !== afMesita) return false;
+      if (afStatus === "revisar" && !needsReview(s)) return false;
+      if (afStatus === "curso" && s.outAt) return false;
+      return !term || s.name.toLowerCase().indexOf(term) >= 0;
+    }).slice(0, 200);
+    var ul = mk("ul");
+    if (shiftsLoaded && !list.length) ul.appendChild(mk("li", "empty", "No hay asistencias con esos filtros."));
+    list.forEach(function (s) {
+      var li = shiftRow(s, true);
+      var ed = mk("button", "btn", "✎"); ed.type = "button"; ed.style.minHeight = "36px"; ed.addEventListener("click", function () { openShiftEditor(s); }); li.appendChild(ed);
+      var del = mk("button", "btn danger", pendingDel === s.id ? "¿Seguro?" : "✕"); del.type = "button"; del.style.minHeight = "36px";
+      del.addEventListener("click", function () {
+        if (pendingDel !== s.id) { pendingDel = s.id; render(); return; }
+        pendingDel = null; db.collection("shifts").doc(s.id).delete().catch(function (e) { showToast(errText(e, "No se pudo borrar.")); });
+      });
+      li.appendChild(del); ul.appendChild(li);
+    });
+    card.appendChild(ul); app.appendChild(card);
+    app.appendChild(mk("p", "note", "Los turnos con la salida olvidada (o muy largos) quedan “Para revisar”: editalos para corregir la hora de salida."));
+  }
+
+  function settingsView() {
+    var card = mk("section", "card"); card.style.setProperty("--accent", "var(--a3)"); card.style.setProperty("--tint", "var(--t3)");
+    var head = mk("div", "card-head"); head.appendChild(mk("h2", null, "Ajustes de puntos")); card.appendChild(head);
+    var fields = [["pointsPerHour", "Puntos por hora cumplida"], ["weeklyGoalHours", "Meta semanal (horas)"], ["weeklyBonus", "Bonus por cumplir la meta semanal"],
+      ["streakBonus", "Bonus extra por cada semana seguida (hasta 4)"], ["maxShiftHours", "Máximo de horas que cuentan por turno"], ["minMinutes", "Mínimo de minutos para que cuente un turno"]];
+    var inputs = {};
+    fields.forEach(function (f) {
+      var wrap = mk("div", "field"); wrap.appendChild(mk("label", null, f[1]));
+      var inp = draftInput("set:" + f[0], String(settings[f[0]]), "", 5); inp.inputMode = "decimal"; inputs[f[0]] = inp; wrap.appendChild(inp); card.appendChild(wrap);
+    });
+    var tg = mk("div", "field"); tg.style.paddingBottom = "12px";
+    var rb = mk("button", "btn" + (settings.showRanking ? " on" : ""), settings.showRanking ? "🏆 Ranking visible para todos" : "🏆 Ranking oculto (solo admin)"); rb.type = "button";
+    rb.addEventListener("click", function () { var d = {}; d.showRanking = !settings.showRanking; db.collection("config").doc("attendance").set(d, { merge: true }).catch(function (e) { showToast(errText(e, "No se pudo cambiar.")); }); });
+    tg.appendChild(rb); card.appendChild(tg);
+    var f5 = mk("div"); f5.style.padding = "0 16px 16px";
+    var save = mk("button", "btn primary", "Guardar ajustes"); save.type = "button";
+    save.addEventListener("click", function () {
+      var d = {}, bad = false;
+      fields.forEach(function (f) { var n = parseFloat(String(inputs[f[0]].value).replace(",", ".")); if (!isFinite(n) || n < 0) bad = true; d[f[0]] = n; });
+      if (bad || d.maxShiftHours <= 0) { showToast("Revisá los números: tienen que ser positivos."); return; }
+      db.collection("config").doc("attendance").set(d, { merge: true }).then(function () { fields.forEach(function (f) { delete drafts["set:" + f[0]]; }); showToast("Ajustes guardados."); render(); })
+        .catch(function (e) { showToast(errText(e, "No se pudo guardar.")); });
+    });
+    f5.appendChild(save); card.appendChild(f5); app.appendChild(card);
+    app.appendChild(mk("p", "note", "Los cambios se aplican a todo el historial: los puntos se calculan con estas reglas."));
+  }
+
+  function membersView() {
+    var card = mk("section", "card"); card.style.setProperty("--accent", "var(--a1)"); card.style.setProperty("--tint", "var(--t1)");
+    var head = mk("div", "card-head"); head.appendChild(mk("h2", null, "Integrantes")); head.appendChild(mk("span", "count", String(users.length))); card.appendChild(head);
+    var order = { pending: 0, blocked: 4, reader: 3, editor: 3, kiosk: 2, admin: 1 };
+    var list = users.slice().sort(function (a, b) { return (order[a.role] - order[b.role]) || a.name.localeCompare(b.name); });
+    list.forEach(function (u) {
+      var row = mk("div", "member" + (u.role === "pending" ? " pend" : ""));
+      var info = mk("div", "minfo"); info.appendChild(mk("b", null, u.name || u.email)); info.appendChild(mk("span", null, u.email)); row.appendChild(info);
+      var sel = mk("select");
+      ["pending", "reader", "editor", "admin", "kiosk", "blocked"].forEach(function (r) { var o = mk("option", null, ROLES[r]); o.value = r; if (r === u.role) o.selected = true; sel.appendChild(o); });
+      if (u.uid === authUser.uid) sel.disabled = true;
+      sel.addEventListener("change", function () { db.collection("users").doc(u.uid).update({ role: sel.value }).catch(function (e) { showToast(errText(e, "No se pudo cambiar el rol.")); }); });
+      row.appendChild(sel); card.appendChild(row);
+    });
+    if (!list.length) card.appendChild(mk("div", "empty", "Todavía no hay nadie."));
+    app.appendChild(card);
+    app.appendChild(mk("p", "note", "Editor y Admin marcan asistencia. “Pantalla de mesita” es para la cuenta de la compu de cada mesita: solo muestra el QR. Los roles se comparten con las otras páginas."));
+  }
+
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") editOv.hidden = true; });
+  init();
+})();
+</script>
+</body>
+</html>
