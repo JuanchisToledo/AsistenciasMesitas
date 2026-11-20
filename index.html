@@ -128,6 +128,7 @@ li input[type="text"] { padding: 8px 10px; }
 .stat { background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
 .stat b { display: block; font-size: 1.35rem; }
 .stat span { color: var(--muted); font-size: .8rem; }
+.overlay video { width: min(100%, 420px); border-radius: 14px; background: #000; }
 .bigcode { font-family: ui-monospace, Menlo, monospace; font-size: 2.6rem; font-weight: 800; letter-spacing: .08em; margin: 6px 0; }
 .medal { flex: none; width: 34px; text-align: center; font-size: 1.3rem; font-weight: 700; color: var(--muted); }
 </style>
@@ -139,6 +140,7 @@ li input[type="text"] { padding: 8px 10px; }
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
 <script>
 var firebaseConfig = {
   apiKey: "AIzaSyBJvSbK3lDyxy8yfmMPE_d5l8IpWkMoMfs",
@@ -198,7 +200,7 @@ function computeStats(shifts, st) {
   var subMe = null, subData = [], activeRole = null;
   var view = "", scan = null, drafts = {}, msg = "", toastTimer = null, progOff = 0, rankOff = 0;
   var afMesita = "", afStatus = "todas", afQ = "";
-  var kiosk = null, kioskLoop = null, kioskClock = null, wakeLock = null;
+  var kiosk = null, kioskLoop = null, kioskClock = null, wakeLock = null, kioskManualStop = false;
   var qs = new URLSearchParams(location.search);
   if (qs.get("m") && qs.get("c")) scan = { m: qs.get("m"), c: qs.get("c") };
 
@@ -361,7 +363,7 @@ function computeStats(shifts, st) {
       var row = mk("div", "chips"); row.style.justifyContent = "center";
       mesitas.forEach(function (m) {
         var info = mesitaInfo(m.id), c = mk("button", "chip", m.name); c.type = "button"; c.style.setProperty("--accent", "var(--a" + info.k + ")");
-        c.addEventListener("click", function () { startKiosk(m.id); });
+        c.addEventListener("click", function () { kioskManualStop = false; startKiosk(m.id); });
         row.appendChild(c);
       });
       body.appendChild(row);
@@ -380,7 +382,7 @@ function computeStats(shifts, st) {
         var pr = mk("div", "prog"); var pb = mk("div"); pb.id = "kbar"; pr.appendChild(pb); body.appendChild(pr);
       } else body.appendChild(mk("p", "note", "Generando código…"));
       var stop = mk("button", "btn", "Cambiar de mesita / detener"); stop.type = "button"; stop.style.marginTop = "14px";
-      stop.addEventListener("click", function () { stopKiosk(); render(); });
+      stop.addEventListener("click", function () { kioskManualStop = true; stopKiosk(); render(); });
       body.appendChild(stop);
     }
     card.appendChild(body); app.appendChild(card);
@@ -437,6 +439,10 @@ function computeStats(shifts, st) {
     var tabs = tabsForRole();
     if (!tabs.some(function (t) { return t[0] === view; })) view = tabs[0] ? tabs[0][0] : "ranking";
     if (view !== "kiosko" && kiosk) stopKiosk();
+    if (isKioskRole() && !kiosk && !kioskManualStop && db) {
+      var saved = null; try { saved = localStorage.getItem("kioskMesita"); } catch (e) {}
+      if (saved && mesitaInfo(saved)) { startKiosk(saved); return; }
+    }
     var top = mk("div", "top"), l = mk("div");
     l.appendChild(mk("h1", null, "Asistencias de las mesitas"));
     l.appendChild(mk("p", "sub", isKioskRole() ? "Esta cuenta solo muestra el código de la mesita." : (canMark() ? "Marcá tu entrada y salida y sumá puntos por las horas que cumplís." : "Estás en modo lectura.")));
@@ -470,11 +476,17 @@ function computeStats(shifts, st) {
     var card = mk("section", "card"); card.style.setProperty("--accent", "var(--a2)"); card.style.setProperty("--tint", "var(--t2)");
     var head = mk("div", "card-head"); head.appendChild(mk("h2", null, open ? "Estás en la mesita" : "Marcar entrada")); card.appendChild(head);
     var body = mk("div"); body.style.padding = "14px 16px 16px";
+    if (!scan) {
+      var cam = mk("button", "btn primary", "📷 Escanear QR con la cámara"); cam.type = "button"; cam.style.cssText = "width:100%;margin-bottom:8px";
+      cam.addEventListener("click", openScanner); body.appendChild(cam);
+      var or = mk("p", "note", "O marcá a mano con el código de la pantalla:"); or.style.margin = "0 0 12px"; body.appendChild(or);
+    }
     var mesitaSel = scan ? scan.m : (open ? open.mesita : (drafts.msel || ""));
     if (open) {
       var p = mk("p", null, "Entraste a " + mesitaName(open.mesita) + " a las " + p2(new Date(open.inAt).getHours()) + ":" + p2(new Date(open.inAt).getMinutes()) + " (" + hm((Date.now() - open.inAt) / 60000) + ")."); p.style.margin = "0 0 10px";
       body.appendChild(p);
       if (isStale(open)) body.appendChild(mk("p", "note err", "Pasó mucho tiempo desde tu entrada: un admin va a revisar este turno."));
+      if (scan && scan.m !== open.mesita) body.appendChild(mk("p", "note err", "Estás marcado en " + mesitaName(open.mesita) + ": para la salida escaneá el QR de esa mesita."));
     } else if (scan) {
       var q = mk("p", null, "Vas a marcar entrada en " + mesitaName(scan.m) + "."); q.style.margin = "0 0 10px"; body.appendChild(q);
     } else {
@@ -632,6 +644,48 @@ function computeStats(shifts, st) {
     act.appendChild(cancel); act.appendChild(save); box.appendChild(act); editOv.appendChild(box);
   }
   var pendingDel = null;
+  var scanOv = mk("div", "overlay"); scanOv.hidden = true; scanOv.style.flexDirection = "column"; scanOv.style.gap = "12px"; document.body.appendChild(scanOv);
+  var scanStream = null, scanTimer = null;
+  function closeScanner() {
+    clearTimeout(scanTimer); scanTimer = null;
+    if (scanStream) { scanStream.getTracks().forEach(function (t) { t.stop(); }); scanStream = null; }
+    scanOv.hidden = true; scanOv.textContent = "";
+  }
+  function handleScanned(text) {
+    try {
+      var u = new URL(text);
+      if (u.origin !== location.origin) return false;
+      var m = u.searchParams.get("m"), c = u.searchParams.get("c");
+      if (!m || !/^\d{6}$/.test(c || "")) return false;
+      closeScanner(); scan = { m: m, c: c }; render(); return true;
+    } catch (e) { return false; }
+  }
+  function openScanner() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { showToast("Este navegador no permite usar la cámara acá. Escaneá el QR con la cámara del celular."); return; }
+    if (typeof jsQR === "undefined") { showToast("No se pudo cargar el lector de QR. Revisá tu conexión."); return; }
+    scanOv.textContent = ""; scanOv.hidden = false;
+    var video = mk("video"); video.setAttribute("playsinline", "true"); video.muted = true;
+    var hint = mk("p", null, "Apuntá la cámara al QR de la pantalla de la mesita"); hint.style.cssText = "color:#fff;text-align:center;margin:0";
+    var close = mk("button", "btn", "✕ Cerrar"); close.type = "button"; close.addEventListener("click", closeScanner);
+    scanOv.appendChild(video); scanOv.appendChild(hint); scanOv.appendChild(close);
+    var canvas = document.createElement("canvas"), ctx = canvas.getContext("2d", { willReadFrequently: true });
+    function loop() {
+      if (scanOv.hidden) return;
+      if (video.readyState === video.HAVE_ENOUGH_DATA && video.videoWidth) {
+        var sc = Math.min(1, 640 / video.videoWidth);
+        canvas.width = Math.round(video.videoWidth * sc); canvas.height = Math.round(video.videoHeight * sc);
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        var res = jsQR(img.data, canvas.width, canvas.height, { inversionAttempts: "dontInvert" });
+        if (res && handleScanned(res.data)) return;
+      }
+      scanTimer = setTimeout(loop, 150);
+    }
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } }, audio: false })
+      .then(function (stream) { scanStream = stream; video.srcObject = stream; return video.play(); })
+      .then(loop)
+      .catch(function () { closeScanner(); showToast("No se pudo abrir la cámara. Permití el acceso o escaneá con la cámara del celular."); });
+  }
   function shiftsView() {
     var card = mk("section", "card"); card.style.setProperty("--accent", "var(--a1)"); card.style.setProperty("--tint", "var(--t1)");
     var head = mk("div", "card-head"); head.appendChild(mk("h2", null, "Asistencias")); head.appendChild(mk("span", "count", String(shifts.length))); card.appendChild(head);
@@ -717,7 +771,7 @@ function computeStats(shifts, st) {
     app.appendChild(mk("p", "note", "Editor y Admin marcan asistencia. “Pantalla de mesita” es para la cuenta de la compu de cada mesita: solo muestra el QR. Los roles se comparten con las otras páginas."));
   }
 
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") editOv.hidden = true; });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closeScanner(); editOv.hidden = true; } });
   init();
 })();
 </script>
